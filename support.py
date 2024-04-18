@@ -14,13 +14,17 @@ def import_folder(*path):
     Load all images from a folder specified by the path.
     """
     frames = []
-    for folder_path, subfolders, image_names in walk(join(*path)):
-        # Filter out filenames that cannot be converted to integers
-        valid_image_names = [name for name in image_names if name.split('.')[0].isdigit()]
-        for image_name in sorted(valid_image_names, key=lambda name: int(name.split('.')[0])):
+    for folder_path, _, image_names in walk(join(*path)):
+        for image_name in sorted(image_names):
             full_path = join(folder_path, image_name)
-            frames.append(pygame.image.load(full_path).convert_alpha())
-    return frames 
+            try:
+                # Attempt to load the image
+                surface = pygame.image.load(full_path).convert_alpha()
+                frames.append(surface)
+            except pygame.error as e:
+                print(f"Error loading image {image_name}: {e}")
+    return frames
+
 
 
 def import_folder_dict(*path):

@@ -38,8 +38,7 @@ def level0_game(screen, screen_width, screen_height):
 
     # Position of the play button
     play_button_x = 190
-    play_button_y = 585
-
+    play_button_y = 485
     # Function to check if the mouse is over the play button
     def is_over_play_button(mouse_pos):
         return play_button_x <= mouse_pos[0] <= play_button_x + play_button_image.get_width() and \
@@ -60,7 +59,7 @@ def level0_game(screen, screen_width, screen_height):
                     return True
         
         # Draw the background image
-        screen.blit(background_image, (0, -80))
+        screen.blit(background_image, (0, 0))
         
         # Get the current mouse position
         mouse_pos = pygame.mouse.get_pos()

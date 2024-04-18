@@ -8,7 +8,6 @@ def level1_game(screen, screen_width, screen_height):
     background_image = pygame.image.load(background_path).convert()
     background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
     
-    
     custom_cursor_path = "useful_images/cursor.jpg"  
     cursor_image = pygame.image.load(custom_cursor_path).convert_alpha()
     

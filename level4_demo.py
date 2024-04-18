@@ -79,166 +79,443 @@ class obj_render_front_gate(pygame.sprite.Sprite):
         self.input()
         self.move(dt)
 class obj_render_guard1(pygame.sprite.Sprite):
-    def __init__(self,pos,groups,start_pos,end_pos):
+    def __init__(self,pos,groups,collision_sprites,anti_collision_sprites,frames,map):
         super().__init__(groups)
-        self.image = pygame.image.load('graphics/objects/Screenshot_2024-04-03_205745-removebg-preview.png')
-        resized_image = pygame.transform.scale(self.image, (25, 40))
+        self.frames ,self.frame_index = frames,0
+        self.state,self.facing_right = 'attack', True
+      #  print(self.frames[self.state])
+        self.image = self.frames[self.state][self.frame_index]
+        self.map =map 
+        self.rect = self.image.get_rect(topleft = pos)
+        self.old_rect = self.rect.copy()
+        self.speed_fac = 1
+        self.xsize_fac = 1 
+        self.ysize_fac =1
+        self.curr_posx = self.rect.x
+        self.curr_posy = self.rect.y  
+        self.rect.x=1218.0
+        self.rect.y = 320.3
+        self.direction =vector(0.0,0.0)
+        self.speed = 0.0
+        self.xsize =60
+        self.ysize = 50
+       # print("hi")
+        if self.map =='final_map2':
+            self.rect.center=(630,431)
+            self.speed_fac = 1
+            self.xsize_fac = 1 
+            self.ysize_fac =1
+    def animate(self,dt):
+        self.frame_index +=settings.ANIMATION_SPEED*dt 
+        self.image = self.frames[self.state][int(self.frame_index % len(self.frames[self.state]))]
+        self.image = self.image if self.facing_right else pygame.transform.flip(self.image,True,False)
+        resized_image = pygame.transform.scale(self.image, (self.xsize*self.xsize_fac, self.ysize*self.ysize_fac))
         self.image = resized_image
-        self.rect = self.image.get_frect(topleft = pos)
-        self.rect.topleft=(1243,330)
-        self.direction =vector()
-        self.speed = 100  
-        self.prev_motion =True 
-        (a,b)=start_pos 
-        (c,d)=end_pos
-     #   print(a,b,c,d)
-        self.a = a #1243
-        self.b =b  #330
-        self.c =c #800
-        self.d =d     #400 
-        self.move_x =(a-c)/1000 #0.443
-        self.move_y =(d-b)/1000 #0.07 
+    
+                
         
+            
         
     def input(self):
-        input_vector=vector(0,0)
-        
-        if self.prev_motion==True:
-            if self.rect.x>=self.c and self.rect.y<=self.d:
-                input_vector.x-=self.move_x
-                input_vector.y+=self.move_y
-            else:
-                self.prev_motion=False 
-                self.rect.x=self.c
-                self.rect.y =self.d
-        else:
-            if self.rect.x<=self.a and self.rect.y>=self.b:
-                input_vector.x+=self.move_x
-                input_vector.y-=self.move_y
-            else:
-                self.prev_motion=True 
-                self.rect.x=self.a
-                self.rect.y =self.b 
+        self.current_time = ((pygame.time.get_ticks())//1000)%9
+     #   print(self.current_time)
+        b=math.sqrt(3)
+        input_vector= vector(0,0)
+        if self.current_time >=0 and self.current_time<=2 :
+            self.state = 'attack'
+            input_vector.x += b/2
+            input_vector.y +=0.5 
+            self.facing_right =False  
+        if self.current_time>2 and self.current_time<4:
+            self.state = 'attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
+        if self.current_time==4 :
+            self.state = 'attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
+        if self.current_time>4 and self.current_time<=7:
+            self.state = 'attack'
+            input_vector.x -= b/2 
+            input_vector.y -=0.5 
+            self.facing_right =False
+        if self.current_time>7 and self.current_time<9:
+            self.state ='attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
+        if self.current_time==9:
+            self.state = 'attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
       #  print(input_vector)
+             
+            
         if input_vector:
             self.direction =input_vector.normalize()
         else:
             self.direction = input_vector
-         
         
-         
+        
     def move(self,dt):
-        
-        self.rect.topleft +=self.direction*self.speed*dt    
+        if self.map=='final_map2':
+            a = float(self.direction.x) * float(self.speed) 
+       #     print(a,self.direction,self.speed,dt)
+            self.rect.x += float(a)
+            b= self.direction.y * self.speed 
+            self.rect.y +=b 
+         
+        else:
+            a = float(self.direction.x) * float(self.speed) * float(dt)
+            self.rect.x += float(a)
+            b= self.direction.y * self.speed *dt 
+            self.rect.y +=b 
+          
+         
     def update(self,dt):
+     #   print(self.rect.x,self.rect.y)
+        self.curr_posx=self.rect.x 
+        self.curr_posy=self.rect.y
+    #    print(self.curr_posx,self.curr_posy)
+        self.old_rect = self.rect.copy()
         self.input()
         self.move(dt)
+        
+        self.animate(dt)
+     #   print("fdf")
+      #  print(self.curr_posx,self.curr_posy,self.current_time)
 class obj_render_guard2(pygame.sprite.Sprite):
-    def __init__(self,pos,groups):
+    def __init__(self,pos,groups,collision_sprites,anti_collision_sprites,frames,map):
         super().__init__(groups)
-        self.image = pygame.image.load('graphics/objects/Screenshot_2024-04-03_205745-removebg-preview.png')
-        resized_image = pygame.transform.scale(self.image, (25, 40))
-        self.image = resized_image
+        self.frames ,self.frame_index = frames,0
+        self.state,self.facing_right = 'attack', True
+      #  print(self.frames[self.state])
+        self.image = self.frames[self.state][self.frame_index]
+        self.map =map 
         self.rect = self.image.get_rect(topleft = pos)
+        self.old_rect = self.rect.copy()
+        self.speed_fac = 1
+        self.xsize_fac = 1 
+        self.ysize_fac =1
+        self.curr_posx = self.rect.x
+        self.curr_posy = self.rect.y  
+        self.rect.x=1153
+        self.rect.y = 280
+        self.direction =vector(0.0,0.0)
+        self.speed = 0.0
+        self.xsize =60
+        self.ysize = 50
+       # print("hi")
+        if self.map =='final_map2':
+            self.rect.center=(630,431)
+            self.speed_fac = 1
+            self.xsize_fac = 1 
+            self.ysize_fac =1
+    def animate(self,dt):
+        self.frame_index +=settings.ANIMATION_SPEED*dt 
+        self.image = self.frames[self.state][int(self.frame_index % len(self.frames[self.state]))]
+        self.image = self.image if self.facing_right else pygame.transform.flip(self.image,True,False)
+        resized_image = pygame.transform.scale(self.image, (self.xsize*self.xsize_fac, self.ysize*self.ysize_fac))
+        self.image = resized_image
+    
+                
         
-        self.rect.topleft=(1140,278)
-        self.direction =vector()
-        self.speed = 0         
+            
         
     def input(self):
-        keys = pygame.key.get_pressed()
-        input_vector = vector(0,0)
-        if keys[pygame.K_RIGHT]:
-            input_vector.x+=1
-        if keys[pygame.K_LEFT]:
-            input_vector.x-=1 
-        if keys[pygame.K_DOWN]:
-            input_vector.y+=1
-        if keys[pygame.K_UP]:
-            input_vector.y-=1 
-       # if keys[pygame.K_0]:
-      #      print(self.rect.topleft) 
+        self.current_time = ((pygame.time.get_ticks())//1000)%9
+     #   print(self.current_time)
+        b=math.sqrt(3)
+        input_vector= vector(0,0)
+        if self.current_time >=0 and self.current_time<=2 :
+            self.state = 'attack'
+            input_vector.x += b/2
+            input_vector.y +=0.5 
+            self.facing_right =False  
+        if self.current_time>2 and self.current_time<4:
+            self.state = 'attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
+        if self.current_time==4 :
+            self.state = 'attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
+        if self.current_time>4 and self.current_time<=7:
+            self.state = 'attack'
+            input_vector.x -= b/2 
+            input_vector.y -=0.5 
+            self.facing_right =False
+        if self.current_time>7 and self.current_time<9:
+            self.state ='attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
+        if self.current_time==9:
+            self.state = 'attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
+      #  print(input_vector)
+             
+            
         if input_vector:
             self.direction =input_vector.normalize()
         else:
-            self.direction = input_vector 
-         
-    def move(self,dt):
+            self.direction = input_vector
         
-        self.rect.topleft +=self.direction*self.speed*dt    
+        
+    def move(self,dt):
+        if self.map=='final_map2':
+            a = float(self.direction.x) * float(self.speed) 
+       #     print(a,self.direction,self.speed,dt)
+            self.rect.x += float(a)
+            b= self.direction.y * self.speed 
+            self.rect.y +=b 
+         
+        else:
+            a = float(self.direction.x) * float(self.speed) * float(dt)
+            self.rect.x += float(a)
+            b= self.direction.y * self.speed *dt 
+            self.rect.y +=b 
+          
+         
     def update(self,dt):
+     #   print(self.rect.x,self.rect.y)
+        self.curr_posx=self.rect.x 
+        self.curr_posy=self.rect.y
+    #    print(self.curr_posx,self.curr_posy)
+        self.old_rect = self.rect.copy()
         self.input()
         self.move(dt)
+        
+        self.animate(dt)
+     #   print("fdf")
+      #  print(self.curr_posx,self.curr_posy,self.current_time)
 class obj_render_guard3(pygame.sprite.Sprite):
-    def __init__(self,pos,groups):
+    def __init__(self,pos,groups,collision_sprites,anti_collision_sprites,frames,map):
         super().__init__(groups)
-        self.image = pygame.image.load('graphics/objects/Screenshot_2024-04-03_205745-removebg-preview.png')
-        resized_image = pygame.transform.scale(self.image, (25, 40))
-        self.image = resized_image
+        self.frames ,self.frame_index = frames,0
+        self.state,self.facing_right = 'attack', True
+      #  print(self.frames[self.state])
+        self.image = self.frames[self.state][self.frame_index]
+        self.map =map 
         self.rect = self.image.get_rect(topleft = pos)
-        self.rect.topleft =(761,683)
-        self.direction =vector()
-        self.speed = 0        
+        self.old_rect = self.rect.copy()
+        self.speed_fac = 1
+        self.xsize_fac = 1 
+        self.ysize_fac =1
+        self.curr_posx = self.rect.x
+        self.curr_posy = self.rect.y  
+        self.rect.x=852
+        self.rect.y = 382
+        self.direction =vector(0.0,0.0)
+        self.speed = 0.0
+        self.xsize =60
+        self.ysize = 50
+       # print("hi")
+        if self.map =='final_map2':
+            self.rect.center=(630,431)
+            self.speed_fac = 1
+            self.xsize_fac = 1 
+            self.ysize_fac =1
+    def animate(self,dt):
+        self.frame_index +=settings.ANIMATION_SPEED*dt 
+        self.image = self.frames[self.state][int(self.frame_index % len(self.frames[self.state]))]
+        self.image = self.image if self.facing_right else pygame.transform.flip(self.image,True,False)
+        resized_image = pygame.transform.scale(self.image, (self.xsize*self.xsize_fac, self.ysize*self.ysize_fac))
+        self.image = resized_image
+    
+                
+        
+            
         
     def input(self):
-        keys = pygame.key.get_pressed()
-        input_vector = vector(0,0)
-        if keys[pygame.K_RIGHT]:
-            input_vector.x+=1
-        if keys[pygame.K_LEFT]:
-            input_vector.x-=1 
-        if keys[pygame.K_DOWN]:
-            input_vector.y+=1
-        if keys[pygame.K_UP]:
-            input_vector.y-=1 
-     #   if keys[pygame.K_0]:
-      #      print(self.rect.topleft) 
+        self.current_time = ((pygame.time.get_ticks())//1000)%9
+     #   print(self.current_time)
+        b=math.sqrt(3)
+        input_vector= vector(0,0)
+        if self.current_time >=0 and self.current_time<=2 :
+            self.state = 'attack'
+            input_vector.x += b/2
+            input_vector.y +=0.5 
+            self.facing_right =False  
+        if self.current_time>2 and self.current_time<4:
+            self.state = 'attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
+        if self.current_time==4 :
+            self.state = 'attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
+        if self.current_time>4 and self.current_time<=7:
+            self.state = 'attack'
+            input_vector.x -= b/2 
+            input_vector.y -=0.5 
+            self.facing_right =False
+        if self.current_time>7 and self.current_time<9:
+            self.state ='attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
+        if self.current_time==9:
+            self.state = 'attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
+      #  print(input_vector)
+             
+            
         if input_vector:
             self.direction =input_vector.normalize()
         else:
-            self.direction = input_vector 
-         
-    def move(self,dt):
+            self.direction = input_vector
         
-        self.rect.topleft +=self.direction*self.speed*dt    
+        
+    def move(self,dt):
+        if self.map=='final_map2':
+            a = float(self.direction.x) * float(self.speed) 
+       #     print(a,self.direction,self.speed,dt)
+            self.rect.x += float(a)
+            b= self.direction.y * self.speed 
+            self.rect.y +=b 
+         
+        else:
+            a = float(self.direction.x) * float(self.speed) * float(dt)
+            self.rect.x += float(a)
+            b= self.direction.y * self.speed *dt 
+            self.rect.y +=b 
+          
+         
     def update(self,dt):
+     #   print(self.rect.x,self.rect.y)
+        self.curr_posx=self.rect.x 
+        self.curr_posy=self.rect.y
+    #    print(self.curr_posx,self.curr_posy)
+        self.old_rect = self.rect.copy()
         self.input()
         self.move(dt)
+        
+        self.animate(dt)
+     #   print("fdf")
+      #  print(self.curr_posx,self.curr_posy,self.current_time)
+
 class obj_render_guard4(pygame.sprite.Sprite):
-    def __init__(self,pos,groups):
+    def __init__(self,pos,groups,collision_sprites,anti_collision_sprites,frames,map):
         super().__init__(groups)
-        self.image = pygame.image.load('graphics/objects/Screenshot_2024-04-03_205745-removebg-preview.png')
-        resized_image = pygame.transform.scale(self.image, (25, 40))
-        self.image = resized_image
+        self.frames ,self.frame_index = frames,0
+        self.state,self.facing_right = 'attack', True
+      #  print(self.frames[self.state])
+        self.image = self.frames[self.state][self.frame_index]
+        self.map =map 
         self.rect = self.image.get_rect(topleft = pos)
-        self.rect.topleft=(842,385)
-        self.direction =vector()
-        self.speed = 0         
+        self.old_rect = self.rect.copy()
+        self.speed_fac = 1
+        self.xsize_fac = 1 
+        self.ysize_fac =1
+        self.curr_posx = self.rect.x
+        self.curr_posy = self.rect.y  
+        self.rect.x=767
+        self.rect.y = 654
+        self.direction =vector(0.0,0.0)
+        self.speed = 0.0
+        self.xsize =60
+        self.ysize = 50
+       # print("hi")
+        if self.map =='final_map2':
+            self.rect.center=(630,431)
+            self.speed_fac = 1
+            self.xsize_fac = 1 
+            self.ysize_fac =1
+    def animate(self,dt):
+        self.frame_index +=settings.ANIMATION_SPEED*dt 
+        self.image = self.frames[self.state][int(self.frame_index % len(self.frames[self.state]))]
+        self.image = self.image if self.facing_right else pygame.transform.flip(self.image,True,False)
+        resized_image = pygame.transform.scale(self.image, (self.xsize*self.xsize_fac, self.ysize*self.ysize_fac))
+        self.image = resized_image
+    
+                
+        
+            
         
     def input(self):
-        keys = pygame.key.get_pressed()
-        input_vector = vector(0,0)
-        if keys[pygame.K_RIGHT]:
-            input_vector.x+=1
-        if keys[pygame.K_LEFT]:
-            input_vector.x-=1 
-        if keys[pygame.K_DOWN]:
-            input_vector.y+=1
-        if keys[pygame.K_UP]:
-            input_vector.y-=1
-       # if keys[pygame.K_0]:
-        #    print(self.rect.topleft)  
+        self.current_time = ((pygame.time.get_ticks())//1000)%9
+     #   print(self.current_time)
+        b=math.sqrt(3)
+        input_vector= vector(0,0)
+        if self.current_time >=0 and self.current_time<=2 :
+            self.state = 'attack'
+            input_vector.x += b/2
+            input_vector.y +=0.5 
+            self.facing_right =False  
+        if self.current_time>2 and self.current_time<4:
+            self.state = 'attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
+        if self.current_time==4 :
+            self.state = 'attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
+        if self.current_time>4 and self.current_time<=7:
+            self.state = 'attack'
+            input_vector.x -= b/2 
+            input_vector.y -=0.5 
+            self.facing_right =False
+        if self.current_time>7 and self.current_time<9:
+            self.state ='attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
+        if self.current_time==9:
+            self.state = 'attack'
+            input_vector.x += 0
+            input_vector.y +=0 
+            self.facing_right =False 
+      #  print(input_vector)
+             
+            
         if input_vector:
             self.direction =input_vector.normalize()
         else:
-            self.direction = input_vector 
-         
-    def move(self,dt):
+            self.direction = input_vector
         
-        self.rect.topleft +=self.direction*self.speed*dt    
+        
+    def move(self,dt):
+        if self.map=='final_map2':
+            a = float(self.direction.x) * float(self.speed) 
+       #     print(a,self.direction,self.speed,dt)
+            self.rect.x += float(a)
+            b= self.direction.y * self.speed 
+            self.rect.y +=b 
+         
+        else:
+            a = float(self.direction.x) * float(self.speed) * float(dt)
+            self.rect.x += float(a)
+            b= self.direction.y * self.speed *dt 
+            self.rect.y +=b 
+          
+         
     def update(self,dt):
+     #   print(self.rect.x,self.rect.y)
+        self.curr_posx=self.rect.x 
+        self.curr_posy=self.rect.y
+    #    print(self.curr_posx,self.curr_posy)
+        self.old_rect = self.rect.copy()
         self.input()
         self.move(dt)
+        
+        self.animate(dt)
+     #   print("fdf")
+      #  print(self.curr_posx,self.curr_posy,self.current_time)
+
 
 
 
@@ -272,7 +549,7 @@ class level4_game:
                 for x, y, gid in layer:
                     tile = tmx_map.get_tile_image_by_gid(gid)
                     # Check if the tile has collision properties
-                    print(tile)
+               #     print(tile)
                    # Create a sprite for the tile and add it to the anti_collision_sprites group
                     sprite = Sprite()  # You need to define your Sprite class
                     sprite.image = tile
@@ -310,14 +587,40 @@ class level4_game:
             if obj.name=='front_gate':
                 obj_render_front_gate((obj.x,obj.y),self.all_sprites)
         for obj in tmx_map.get_layer_by_name('Object Layer 2'):
-            if obj.name=='Guard 1':
-                obj_render_guard1((obj.x,obj.y),self.all_sprites,(1243,330),(800,400))
-            if obj.name=='Guard 2':
-                obj_render_guard2((obj.x,obj.y),self.all_sprites)
-            if obj.name=='Guard 3':
-                obj_render_guard3((obj.x,obj.y),self.all_sprites)
-            if obj.name=='Guard 4':
-                obj_render_guard4((obj.x,obj.y),self.all_sprites)
+            if obj.name == 'Guard 1':
+                pos = (obj.x, obj.y)
+                groups = self.all_sprites
+                collision_sprites = self.collision_sprites
+                anti_collision_sprites = self.anti_collision_sprites
+                frames = self.level_frames['guards']
+                map = 'final_map1'
+                self.guard_game = obj_render_guard1(pos, groups, collision_sprites, anti_collision_sprites, frames, map)
+                
+                
+            if obj.name == 'Guard 2':
+                pos = (obj.x, obj.y)
+                groups = self.all_sprites
+                collision_sprites = self.collision_sprites
+                anti_collision_sprites = self.anti_collision_sprites
+                frames = self.level_frames['guards']
+                map = 'final_map1'
+                self.guard_game = obj_render_guard2(pos, groups, collision_sprites, anti_collision_sprites, frames, map)
+            if obj.name == 'Guard 3':
+                pos = (obj.x, obj.y)
+                groups = self.all_sprites
+                collision_sprites = self.collision_sprites
+                anti_collision_sprites = self.anti_collision_sprites
+                frames = self.level_frames['guards']
+                map = 'final_map1'
+                self.guard_game = obj_render_guard3(pos, groups, collision_sprites, anti_collision_sprites, frames, map)
+            if obj.name == 'Guard 4':
+                pos = (obj.x, obj.y)
+                groups = self.all_sprites
+                collision_sprites = self.collision_sprites
+                anti_collision_sprites = self.anti_collision_sprites
+                frames = self.level_frames['guards']
+                map = 'final_map1'
+                self.guard_game = obj_render_guard4(pos, groups, collision_sprites, anti_collision_sprites, frames, map)
                 
                 
                 
@@ -356,11 +659,11 @@ class level4_game:
         
             
         self.all_sprites.update(dt)
-        self.display_surface.fill('black')
+        self.display_surface.fill((0,100,40))
         self.all_sprites.draw(self.player.rect.center)
         if (self.curr_posx<=1290 and self.curr_posx>=1180)and(self.curr_posy<=300 and self.curr_posy>=200):
-            return True 
-        return False 
+            return 1 
+        return 0 
         
         
         
