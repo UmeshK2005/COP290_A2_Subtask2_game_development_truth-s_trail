@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="isometric" renderorder="right-down" width="60" height="45" tilewidth="64" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="26">
+<map version="1.10" tiledversion="1.10.2" orientation="isometric" renderorder="right-down" width="60" height="45" tilewidth="64" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="27">
  <tileset firstgid="1" source="iso_graphics/map2_TS1.tsx"/>
  <tileset firstgid="29" source="iso_graphics/map2_obj1.tsx"/>
+ <tileset firstgid="1037" source="iso_graphics/objects_1.tsx"/>
  <layer id="1" name="Tile Layer 1" width="60" height="45">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -52,29 +53,32 @@
 </data>
  </layer>
  <objectgroup id="2" name="Object Layer 1">
-  <object id="1" gid="984" x="-13.6701" y="360.131" width="559.958" height="583.574"/>
-  <object id="2" gid="984" x="3.97284" y="910.128" width="658.192" height="611.476" rotation="358.002"/>
-  <object id="4" gid="983" x="208.471" y="79.9133" width="542.535" height="566.151"/>
-  <object id="5" gid="983" x="767.455" y="101.692" width="629.65" height="630.034"/>
-  <object id="6" gid="983" x="1339.51" y="110.403" width="652.88" height="647.457"/>
-  <object id="8" gid="219" x="687.907" y="565.157" width="981.682" height="579.379"/>
-  <object id="11" gid="351" x="221.076" y="227.696" width="217.505" height="220.422" rotation="0.435464"/>
-  <object id="12" gid="451" x="109.539" y="245.227" width="210.652" height="325.728"/>
-  <object id="13" gid="909" x="747.887" y="1142.01" width="576.612" height="291.806"/>
+  <object id="1" name="wall4" gid="984" x="-13.6701" y="360.131" width="559.958" height="583.574"/>
+  <object id="2" name="wall5" gid="984" x="3.97284" y="910.128" width="658.192" height="611.476" rotation="358.002"/>
+  <object id="4" name="wall3" gid="983" x="208.471" y="79.9133" width="542.535" height="566.151"/>
+  <object id="5" name="wall2" gid="983" x="767.455" y="101.692" width="629.65" height="630.034"/>
+  <object id="6" name="wall1" gid="983" x="1339.51" y="110.403" width="652.88" height="647.457"/>
+  <object id="8" name="bed" gid="219" x="687.907" y="565.157" width="981.682" height="579.379"/>
+  <object id="11" name="drawer" gid="351" x="221.076" y="227.696" width="217.505" height="220.422" rotation="0.435464"/>
+  <object id="12" name="lamp" gid="451" x="109.539" y="245.227" width="210.652" height="325.728"/>
+  <object id="13" name="carpet" gid="909" x="747.887" y="1142.01" width="576.612" height="291.806"/>
  </objectgroup>
  <objectgroup id="3" name="Object Layer 2">
-  <object id="10" gid="351" x="848.76" y="247.381" width="259.267" height="242.421"/>
-  <object id="15" gid="854" x="574.562" y="-1.18285" width="284.459" height="439.804"/>
-  <object id="16" gid="853" x="-141.227" y="226.766" width="255.421" height="375.92"/>
-  <object id="17" gid="1027" x="1447.63" y="329.819" width="1080" height="1080"/>
-  <object id="19" gid="1023" x="-136.443" y="693.757" width="383.085" height="330.817"/>
-  <object id="20" gid="590" x="1483.5" y="690.472" width="565.263" height="402.65"/>
-  <object id="23" gid="55" x="1821" y="1083" width="174" height="180"/>
+  <object id="10" name="drawer2" gid="351" x="848.76" y="247.381" width="259.267" height="242.421"/>
+  <object id="15" name="curtain" gid="854" x="574.562" y="-1.18285" width="284.459" height="439.804"/>
+  <object id="16" name="curtain2" gid="853" x="-141.227" y="226.766" width="255.421" height="375.92"/>
+  <object id="17" name="almirah" gid="1027" x="1447.63" y="329.819" width="1080" height="1080"/>
+  <object id="19" name="window" gid="1023" x="-136.443" y="693.757" width="383.085" height="330.817"/>
+  <object id="20" name="table" gid="590" x="1483.5" y="690.472" width="565.263" height="402.65"/>
+  <object id="23" name="stool" gid="55" x="1821" y="1083" width="174" height="180"/>
  </objectgroup>
  <objectgroup id="4" name="Object Layer 3">
-  <object id="21" gid="2147483846" x="1218" y="92" width="222" height="269"/>
-  <object id="22" gid="195" x="1786" y="200" width="344" height="449"/>
-  <object id="24" gid="259" x="645" y="-313" width="206" height="172"/>
-  <object id="25" gid="266" x="120.25" y="843.75" width="325" height="244"/>
+  <object id="21" name="safe2" gid="2147483846" x="1218" y="92" width="222" height="269"/>
+  <object id="22" name="safe" gid="195" x="1786" y="200" width="344" height="449"/>
+  <object id="24" name="books" gid="259" x="645" y="-313" width="206" height="172"/>
+  <object id="25" name="drawer2" gid="266" x="120.25" y="843.75" width="325" height="244"/>
+ </objectgroup>
+ <objectgroup id="5" name="Object Layer 4">
+  <object id="26" name="player" gid="1049" x="1019.92" y="923.053" width="200.758" height="305.606"/>
  </objectgroup>
 </map>
