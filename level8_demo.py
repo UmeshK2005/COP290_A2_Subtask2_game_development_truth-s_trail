@@ -708,8 +708,8 @@ class obj_render_books(pygame.sprite.Sprite):
         if keys[pygame.K_d]:
             input_vector.x+=a/2
             input_vector.y-=0.5  
-        # if keys[pygame.K_1]:
-            #  print(self.rect.topleft)
+        if keys[pygame.K_1]:
+             print(self.rect.topleft)
         if input_vector:
             self.direction =input_vector.normalize()
         else:
@@ -742,6 +742,10 @@ class level8_game:
         
         
     def setup(self, tmx_map):
+        font_path = "graphics/docktrin.ttf"  # Path to the font file
+        font_size = 36
+        custom_font = pygame.font.Font(font_path, font_size)
+        self.text_surface = custom_font.render("Looks like some confidential files.Press 'f' to inspect the files", True, (0, 0, 0))
         for obj in tmx_map.get_layer_by_name('Object Layer 1'):
             if obj.name == 'bg_wall1':
                 self.player1 = obj_render_bg_wall1((obj.x, obj.y), self.all_sprites)
@@ -803,7 +807,7 @@ class level8_game:
         self.curr_posx =self.player.rect.x 
         self.curr_posy= self.player.rect.y 
         self.all_sprites.update(dt)
-        self.display_surface.fill('black')
+        self.display_surface.fill((76,105,113))
         background_path = "graphics/objects/level8_game.png"  
         background_image = pygame.image.load(background_path).convert()
         background_image = pygame.transform.scale(background_image, (settings.WINDOW_WIDTH, settings.WINDOW_HEIGHT))
@@ -814,11 +818,14 @@ class level8_game:
         
         self.all_sprites.draw(self.player.rect.center)
         
-        font_path = "graphics/docktrin.ttf"  # Path to the font file
-        font_size = 36
-        custom_font = pygame.font.Font(font_path, font_size)
-        text_surface = custom_font.render("Press 'F' to go inside Mansion!", True, (255, 255, 255))
-       # if (self.curr_posx<=1290 and self.curr_posx>=1180)and(self.curr_posy<=300 and self.curr_posy>=200):
-       #     return True 
-        #return False 
+        
+        if (self.curr_posx>=540 and self.curr_posx<=640)and(self.curr_posy>=245 and self.curr_posy<=315):
+            self.display_surface.blit(self.text_surface, ((settings.WINDOW_WIDTH - self.text_surface.get_width()) // 2, 
+                                                          settings.WINDOW_HEIGHT - self.text_surface.get_height()))
+            keys = pygame.key.get_pressed()
+            
+            if keys[pygame.K_f] :
+                return 16
+        return 8 
+     
         

@@ -894,12 +894,12 @@ class obj_render_chair2(pygame.sprite.Sprite):
 class obj_render_screen(pygame.sprite.Sprite):
     def __init__(self,pos,groups):
         super().__init__(groups)
-        self.image = pygame.image.load('useful_images/Picture1.png')
-        resized_image = pygame.transform.scale(self.image, (60, 40))
+        self.image = pygame.image.load('useful_images/mansion_map.png')
+        resized_image = pygame.transform.scale(self.image, (60, 30))
         self.image = pygame.transform.flip(resized_image,True,False)
-        self.image = pygame.transform.rotate(self.image,-45)
+        self.image = pygame.transform.rotate(self.image,-24)
         self.rect = self.image.get_rect(topleft = pos)
-        self.rect.topleft=(873,190)
+        self.rect.topleft=(481,255)#490,260
         self.direction =vector()
         self.speed =0         
         
@@ -919,8 +919,8 @@ class obj_render_screen(pygame.sprite.Sprite):
         if keys[pygame.K_d]:
             input_vector.x+=a/2
             input_vector.y-=0.5  
-      #  if keys[pygame.K_1]:
-       #     print(self.rect.topleft)
+     #   if keys[pygame.K_1]:
+      #      print(self.rect.topleft)
         if input_vector:
             self.direction =input_vector.normalize()
         else:
@@ -987,7 +987,7 @@ class Guard_game(pygame.sprite.Sprite):
       #  print(self.frames[self.state])
         self.image = self.frames[self.state][self.frame_index]
         self.map =map 
-        self.rect = self.image.get_rect(topleft = pos)
+        self.rect = self.image.get_frect(topleft = pos)
         self.old_rect = self.rect.copy()
         self.speed_fac = 1
         self.xsize_fac = 1 
@@ -1110,19 +1110,21 @@ class level5_game:
         self.key2=0
         self.suspision =0
         self.caught =False 
+        self.show_map =False 
         self.setup(self.tmx_map,self.key) 
         font_path = "graphics/docktrin.ttf"  # Path to the font file
         font_size = 36
         custom_font = pygame.font.Font(font_path, font_size)
         self.text_surface1 = custom_font.render("Need a key to open the door", True, (0, 0, 0))
-        self.text_surface2 = custom_font.render("Something maybe inside the drawer", True, (0, 0, 0))
-        self.text_surface3 = custom_font.render("It looks like some key,Press 'f' to take it !", True, (0, 0, 0))
+        self.text_surface2 = custom_font.render("Something might be inside the drawer.Press 'f' to peep in ", True, (0, 0, 0))
+        self.text_surface3 = custom_font.render("Press 'f' to acquire the key !", True, (0, 0, 0))
         self.text_surface4 = custom_font.render("Key taken!", True, (0, 0, 0))
         self.text_surface5 = custom_font.render("Press 'f' to enter the other room", True, (0, 0, 0))
-        self.text_surface6 = custom_font.render("Press 'f' to enter this room", True, (0, 0, 0))
+        self.text_surface6 = custom_font.render("Press 'f' to enter this room", True, (0, 0, 0) )
+        self.text_surface7 = custom_font.render("Looks like the map of the Mansion.Press 'k' for a closer view", True, (0, 0, 0))
+        self.text_surface8 = custom_font.render("Press 'f' to exit the view", True, (0, 0, 0))
         custom_cursor_path = "useful_images/cursor.jpg"
-        self.mouse_pressed =False 
-        
+        self.mouse_pressed =False         
           
         cursor_image = pygame.image.load(custom_cursor_path).convert_alpha()
         cursor_mask = pygame.mask.from_surface(cursor_image)
@@ -1152,9 +1154,9 @@ class level5_game:
         # Calculate the width of the suspicion bar based on current suspicion level
         bar_width = int((suspicion / max_suspicion) * width)
         # Draw the background bar
-        pygame.draw.rect(surface, self.RED, (x, y, width, height))
+        # pygame.draw.rect(surface, self.RED, (x, y, width, height))
         # Draw the suspicion bar on top
-        pygame.draw.rect(surface, self.GREEN, (x, y, bar_width, height))    
+        # pygame.draw.rect(surface, self.GREEN, (x, y, bar_width, height))    
     def play_button_clicked(self):
         self.current_time = (pygame.time.get_ticks())
        # print(self.current_time,self.start_time,self.mouse_pressed,self.key,self.curr_posx,self.curr_posy)
@@ -1166,7 +1168,7 @@ class level5_game:
                 self.key =1
             elif self.key==1:
                 self.key=2
-        if (self.current_time-self.start_time<1000 and self.current_time-self.start_time>0)  and self.key==1:
+        if (self.current_time-self.start_time<5000 and self.current_time-self.start_time>0)  and self.key==1:
             self.display_surface.blit(self.text_surface3, ((settings.WINDOW_WIDTH - self.text_surface1.get_width()) // 2, 
                                                           settings.WINDOW_HEIGHT - self.text_surface1.get_height()))
         if (self.current_time-self.start_time<1000 and self.current_time-self.start_time>0)  and self.key==2:
@@ -1179,6 +1181,8 @@ class level5_game:
 
         
     def setup(self, tmx_map,key):
+        map_image = pygame.image.load("graphics/useful_images/mansion_map.png").convert_alpha()
+        self.map_image = pygame.transform.scale(map_image, (settings.WINDOW_WIDTH//2, settings.WINDOW_HEIGHT//2))
         
         # Iterate over objects in the map
         for obj in tmx_map.get_layer_by_name('Object Layer 2'):
@@ -1223,8 +1227,8 @@ class level5_game:
             if obj.name == 'gate2':
                 self.player1 = obj_render_gate2((obj.x, obj.y), self.all_sprites)
         for obj in tmx_map.get_layer_by_name('Object Layer 4'):
-           # if obj.name == 'screen':
-            #    self.player1 = obj_render_screen((obj.x, obj.y), self.all_sprites)
+            if obj.name == 'screen':
+                self.player1 = obj_render_screen((obj.x, obj.y), self.all_sprites)
             if obj.name == 'chair2':
                 self.player1 = obj_render_chair2((obj.x, obj.y), self.all_sprites)
         for obj in tmx_map.get_layer_by_name('Object Layer 5'):
@@ -1257,9 +1261,7 @@ class level5_game:
                 
 
                 
-    def run(self,dt):
-    
-        
+    def run(self,dt):        
         self.curr_posx =self.player.rect.x 
         self.curr_posy= self.player.rect.y 
         mouse_pos = pygame.mouse.get_pos()
@@ -1293,6 +1295,7 @@ class level5_game:
                                                           settings.WINDOW_HEIGHT - self.text_surface1.get_height()))
             keys = pygame.key.get_pressed()
             if keys[pygame.K_f]:
+              
                 return 5 
         if (self.curr_posx>=830 and self.curr_posx<=920)and(self.curr_posy>=260 and self.curr_posy<=300) and self.key2==1 :
             self.display_surface.blit(self.text_surface6, ((settings.WINDOW_WIDTH - self.text_surface6.get_width()) // 2, 
@@ -1300,7 +1303,12 @@ class level5_game:
             keys = pygame.key.get_pressed()
             if keys[pygame.K_f]:
                 return 14
+        
             
+            
+                
+                
+                
             
             
         key1 = self.key 
@@ -1328,8 +1336,8 @@ class level5_game:
         if keys[pygame.K_4]:
             print(self.player.rect.center[0],self.player.rect.center[1],self.guard_game.rect.center[0],self.guard_game.rect.center[1]) 
             print(p,x1,x2)
-        if p<=150 and self.caught ==False:
-            self.suspision+=0 
+        if p<=60 and self.caught ==False:
+            self.suspision+=100 
         suspicion_bar_x = 50
         suspicion_bar_y = 50
         suspicion_bar_width = 200
@@ -1344,6 +1352,20 @@ class level5_game:
        # print(self.current_time2,self.start_time2,self.caught)
         if self.caught and (self.current_time2-self.start_time2>=500):
             return -5 
+        if (self.curr_posx>=380 and self.curr_posx<=490)and(self.curr_posy>=300 and self.curr_posy<=350) :
+          #  print("found")
+            if self.show_map ==False :
+                self.display_surface.blit(self.text_surface7, ((settings.WINDOW_WIDTH - self.text_surface7.get_width()) // 2, 
+                                                          settings.WINDOW_HEIGHT - self.text_surface7.get_height()))
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_k]:
+                self.show_map =True 
+            if keys[pygame.K_f]:
+                self.show_map =False 
+            if self.show_map ==True :
+                self.display_surface.blit(self.map_image, (settings.WINDOW_WIDTH//4, settings.WINDOW_HEIGHT//4))
+                self.display_surface.blit(self.text_surface8, ((settings.WINDOW_WIDTH - self.text_surface8.get_width()) // 2, 
+                                                          settings.WINDOW_HEIGHT - self.text_surface8.get_height()-50))
         
             
         return 10 

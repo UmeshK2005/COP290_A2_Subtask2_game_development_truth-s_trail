@@ -5,7 +5,6 @@ from player import Player
 import pytmx 
 import math 
 
-
 class obj_render_bed(pygame.sprite.Sprite):
     def __init__(self,pos,groups):
         super().__init__(groups)
@@ -322,20 +321,33 @@ class level6_game:
         self.curr_posx = 0 
         self.curr_posy =0
         self.key=0
+        self.vault_show =False 
         self.image_show =False 
+        self.vault_unlocked =False 
         self.setup(self.tmx_map) 
         custom_cursor_path = "useful_images/cursor.jpg"
         self.mouse_pressed =False 
         font_path = "graphics/docktrin.ttf"  # Path to the font file
         font_size = 36
         custom_font = pygame.font.Font(font_path, font_size)
-        self.text_surface1 = custom_font.render("Looks like a picture and a key.Press 'G' to view picture and 'F' to take key!", True, (0, 0, 0))
-        self.text_surface2 = custom_font.render("Something maybe inside the drawer", True, (0, 0, 0))
+        self.text_surface_1_ = custom_font.render("Looks like a picture and a drawer, kinda sus...", True, (0, 0, 0))
+        self.text_surface1 = custom_font.render("Press 'G' to view the picture and 'F' to open the drawer!", True, (0, 0, 0))
+        
+        self.text_surface1_ = custom_font.render("Press 'G' to view picture and 'F' to take key!", True, (0, 0, 0))
+        self.text_surface2_ = custom_font.render("Ahh! Another key... Press 'f' to take it", True, (0, 0, 0))
+        self.text_surface2 = custom_font.render("Again,the drawer kinda looks sus..." , True, (0, 0, 0))
         self.text_surface3 = custom_font.render("It looks like some key,Press 'f' to take it !", True, (0, 0, 0))
         self.text_surface4 = custom_font.render("Key taken!", True, (0, 0, 0))
         self.text_surface5 = custom_font.render("Press 'G' to exit view", True, (0, 0, 0))
         self.text_surface6 = custom_font.render("Press 'k' to return to reception", True, (0, 0, 0))
+        self.text_surface7 = custom_font.render("This vault seems somewhat weird.Press 'f' to examine.", True, (0, 0, 0))
+        self.text_surface8 = custom_font.render("Oh,The vault is asking for a 3-digit long passcode.Press 'G' to enter the passcode.", True, (0, 0, 0))
+        self.text_surface11 = custom_font.render("Excellent!!!,The vault is opened!!!,But behold!!", True, (0, 0, 0))
+        self.text_surface12 = custom_font.render("Damnnn!!!, a secret room behind the vault.Press 'f' to enter .", True, (0, 0, 0))
         
+        self.text_surface_tries1 = custom_font.render("You have only 2-tries left!", True, (0, 0, 0))
+        self.text_surface_tries2 = custom_font.render("You have only 1-try left!", True, (0, 0, 0))
+        self.text_surface_tries3 = custom_font.render("The passcode is wrong!", True, (0, 0, 0))
         
         cursor_image = pygame.image.load(custom_cursor_path).convert_alpha()
         cursor_mask = pygame.mask.from_surface(cursor_image)
@@ -353,6 +365,81 @@ class level6_game:
         self.start_time =0
         self.start_time1=0
         self.current_time =1000
+        self.current_time_vault =1000
+        self.start_time_vault =0 
+        self.start_time_pass =0 
+        self.current_time_pass = 1000 
+        self.current_time1=1000
+        self.start_time1 =0
+        self.tries =3 
+        self.clock = pygame.time.Clock()
+    
+    def draw_text(self,surface, text, color, x, y,i):
+        font_path = "graphics/docktrin.ttf"  # Path to the font file
+        font_path1 = "graphics/Lobster_1.3.otf"
+        font_size1 = 36
+        font_size2 = 80
+        custom_font1 = pygame.font.Font(font_path, font_size1)
+        custom_font2 = pygame.font.Font(font_path1, font_size2)
+        self.text_surface9 = custom_font1.render(text, True, color)
+        self.text_surface10 = custom_font2.render(text, True, color)
+        if i==0:
+            surface.blit(self.text_surface9, (x, y))    
+        if i==1:
+            surface.blit(self.text_surface10,(x,y))
+    def input_box(self, screen, message):
+        user_input = ''
+        half_screen_width = screen.get_width() // 2
+        half_screen_height = screen.get_height() // 2
+        input_rect = pygame.Rect(half_screen_width // 2, half_screen_height, half_screen_width, 100)  # Half of the screen width and height, centered
+        num_boxes = 3  # Number of boxes
+        box_width = input_rect.width // num_boxes
+        box_height = input_rect.height
+        corner_radius = 20  # Adjust the corner radius as needed
+        active = True
+
+        while active:
+            pygame.draw.rect(screen, (255, 255, 255), input_rect, border_radius=corner_radius)
+
+            for i in range(num_boxes):
+                box_rect = pygame.Rect(input_rect.x + i * box_width, input_rect.y, box_width, box_height)
+                pygame.draw.rect(screen, (0, 0, 0), box_rect, width=2, border_radius=corner_radius)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        active = False
+                    elif event.key == pygame.K_BACKSPACE:
+                        user_input = user_input[:-1]
+                    elif event.key == pygame.K_g:
+                        return "0"  # If 'g' is pressed, add "0" to the input
+                    elif len(user_input) < num_boxes * 2:  # Limit input to 6 characters
+                        user_input += event.unicode
+
+            # Display message above input box
+            self.draw_text(screen, message, (0, 0, 0), input_rect.x, input_rect.y-40 , 0)
+            # Display user input inside boxes
+            for i, char in enumerate(user_input):
+                box_center_x = input_rect.x + i * (box_width) + box_width // 2
+                box_center_y = input_rect.y + box_height // 2
+                self.draw_text(screen, char, (0, 0, 0), box_center_x, box_center_y-40, 1)
+
+            pygame.display.flip()
+
+        return user_input
+
+
+# Ensure you define the draw_text method and clock attribute appropriately in your class
+
+
+    
+    
+    
+    
+    
         
     def play_button_clicked(self):
         self.current_time = (pygame.time.get_ticks())
@@ -387,12 +474,12 @@ class level6_game:
             self.display_surface.blit(self.text_surface5, ((settings.WINDOW_WIDTH - self.text_surface5.get_width()) // 2, 
                                                           settings.WINDOW_HEIGHT - self.text_surface5.get_height()-50))
         else:
-            if (self.current_time-self.start_time<1000 and self.current_time-self.start_time>0)  and self.key==1:
-                self.display_surface.blit(self.text_surface3, ((settings.WINDOW_WIDTH - self.text_surface3.get_width()) // 2, 
-                                                          settings.WINDOW_HEIGHT - self.text_surface3.get_height()))
-            elif (self.current_time-self.start_time<1000 and self.current_time-self.start_time>0)  and self.key==2:
+        #    if (self.current_time-self.start_time<100 and self.current_time-self.start_time>0)  and self.key==1:
+         #       self.display_surface.blit(self.text_surface3, ((settings.WINDOW_WIDTH - self.text_surface3.get_width()) // 2, 
+           #                                               settings.WINDOW_HEIGHT - self.text_surface3.get_height()-50))
+            if (self.current_time-self.start_time<1000 and self.current_time-self.start_time>0)  and self.key==2:
                 self.display_surface.blit(self.text_surface4, ((settings.WINDOW_WIDTH - self.text_surface4.get_width()) // 2, 
-                                                          settings.WINDOW_HEIGHT - self.text_surface4.get_height()))
+                                                          settings.WINDOW_HEIGHT - self.text_surface4.get_height()-50))
             else:
                 self.mouse_pressed=False 
         
@@ -428,8 +515,8 @@ class level6_game:
                 self.player1 = obj_render_window((obj.x, obj.y), self.all_sprites)
             if obj.name == 'curtain2':
                 self.player1 = obj_render_curtain2((obj.x, obj.y), self.all_sprites)
-            if obj.name == 'curtain':
-                self.player1 = obj_render_curtain((obj.x, obj.y), self.all_sprites)
+            # if obj.name == 'curtain':
+            #     self.player1 = obj_render_curtain((obj.x, obj.y), self.all_sprites)
             if obj.name == 'almirah':
                 self.player1 = obj_render_almirah((obj.x, obj.y), self.all_sprites)
             if obj.name == 'drawer3':
@@ -467,7 +554,7 @@ class level6_game:
         self.curr_posx =self.player.rect.x 
         self.curr_posy= self.player.rect.y 
         self.all_sprites.update(dt)
-        self.display_surface.fill('yellow')
+        self.display_surface.fill((76,105,113))
         
         self.offset.x = -(self.player.rect.center[0] - settings.WINDOW_WIDTH/2)
         self.offset.y = -(self.player.rect.center[1] - settings.WINDOW_HEIGHT/2)
@@ -479,9 +566,19 @@ class level6_game:
           #  print("found")
             self.display_surface.blit(self.text_surface1, ((settings.WINDOW_WIDTH - self.text_surface1.get_width()) // 2, 
                                                           settings.WINDOW_HEIGHT - self.text_surface1.get_height()))
+            self.display_surface.blit(self.text_surface_1_, ((settings.WINDOW_WIDTH - self.text_surface_1_.get_width()) // 2, 
+                                                          settings.WINDOW_HEIGHT - self.text_surface_1_.get_height()-50))
+        if (self.curr_posx>=230 and self.curr_posx<=260)and(self.curr_posy>=130 and self.curr_posy<=200) and self.key ==1:
+          #  print("found")
+            self.display_surface.blit(self.text_surface1_, ((settings.WINDOW_WIDTH - self.text_surface1_.get_width()) // 2, 
+                                                          settings.WINDOW_HEIGHT - self.text_surface1_.get_height()))
+            self.display_surface.blit(self.text_surface2_, ((settings.WINDOW_WIDTH - self.text_surface2_.get_width()) // 2, 
+                                                          settings.WINDOW_HEIGHT - self.text_surface2_.get_height()-50))
+        
         key1 = self.key 
         self.play_button_clicked()
         key2 =self.key 
+     #   print(self.key)
         if key2>key1:
             for obj in self.tmx_map.get_layer_by_name('Object Layer 3'):
                 if obj.name == 'drawer2' and key2==1:
@@ -497,15 +594,75 @@ class level6_game:
                 return 13
         if self.key==2:
             self.display_surface.blit(self.text_surface6, ((settings.WINDOW_WIDTH - self.text_surface6.get_width()) // 2, 
-                                                          settings.WINDOW_HEIGHT - self.text_surface6.get_height()))
+                                                          settings.WINDOW_HEIGHT - self.text_surface6.get_height()-100))
             keys = pygame.key.get_pressed()
             
             if keys[pygame.K_k] :
                 return 12
             
        # self.display_surface.blit(self.custom_cursor_image, (mouse_pos[0] - self.custom_cursor_size[0] // 2, mouse_pos[1] - self.custom_cursor_size[1] // 2))
-        return 6 
-       # if (self.curr_posx<=1290 and self.curr_posx>=1180)and(self.curr_posy<=300 and self.curr_posy>=200):
-       #     return True 
+         
+        if (self.curr_posx>=930 and self.curr_posx<=990)and(self.curr_posy>=275 and self.curr_posy<=320):
+            if self.vault_show==False and self.vault_unlocked==False :
+                self.display_surface.blit(self.text_surface7, ((settings.WINDOW_WIDTH - self.text_surface7.get_width()) // 2, 
+                                                          settings.WINDOW_HEIGHT - self.text_surface7.get_height()-50))
+            keys = pygame.key.get_pressed()
+            self.current_time_vault =pygame.time.get_ticks()
+            if keys[pygame.K_f] :
+                self.start_time_vault =pygame.time.get_ticks()
+                self.vault_show=True 
+            if self.vault_show and (self.current_time_vault-self.start_time_vault)<=3000:
+                
+                self.display_surface.blit(self.text_surface8, ((settings.WINDOW_WIDTH - self.text_surface8.get_width()) // 2, 
+                                                          settings.WINDOW_HEIGHT - self.text_surface8.get_height()-50))
+            else:
+                self.vault_show =False 
+            
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_g]:
+                    passcode = self.input_box(self.display_surface, "Enter 3-digit passcode:")
+                    if passcode !="kd6":
+                        self.start_time_pass =(pygame.time.get_ticks()) 
+                        if passcode!="0":
+                            self.tries-=1
+                    if passcode =="kd6":
+                        self.start_time_pass =(pygame.time.get_ticks())
+                        self.tries=3
+                        self.vault_unlocked=True
+                        self.vault_show =True 
+                    if self.tries<=0:
+                        return -6
+            self.current_time1 =pygame.time.get_ticks()
+        #    print(self.vault_unlocked,self.current_time1,self.start_time1,self.tries)
+            self.current_time_pass = (pygame.time.get_ticks()) 
+            if self.vault_unlocked==False and (self.current_time1-self.start_time1)>=1000:
+                    
+                if self.tries==2:
+                    
+                    self.display_surface.blit(self.text_surface_tries1, ((settings.WINDOW_WIDTH - self.text_surface_tries1.get_width()) // 2, 
+                                                                settings.WINDOW_HEIGHT - self.text_surface_tries1.get_height()-100))
+                elif self.tries ==1:
+                    self.display_surface.blit(self.text_surface_tries2, ((settings.WINDOW_WIDTH - self.text_surface_tries2.get_width()) // 2, 
+                                                                settings.WINDOW_HEIGHT - self.text_surface_tries2.get_height()-100))
+                 
+                if self.current_time_pass-self.start_time_pass<=1000 and self.tries !=3:
+                    self.display_surface.blit(self.text_surface_tries3, ((settings.WINDOW_WIDTH - self.text_surface_tries3.get_width()) // 2, 
+                                                                settings.WINDOW_HEIGHT - self.text_surface_tries3.get_height()-150))
+                    
+            if self.vault_unlocked==True :
+           #     print("hi")
+                self.display_surface.blit(self.text_surface11, ((settings.WINDOW_WIDTH - self.text_surface11.get_width()) // 2, 
+                                                                settings.WINDOW_HEIGHT - self.text_surface11.get_height()-50))
+                self.display_surface.blit(self.text_surface12, ((settings.WINDOW_WIDTH - self.text_surface12.get_width()) // 2, 
+                                                                settings.WINDOW_HEIGHT - self.text_surface12.get_height()))
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_f]:
+                    return 18
+                
+            
+                
+            
+             
         #return False 
+        return 6 
         

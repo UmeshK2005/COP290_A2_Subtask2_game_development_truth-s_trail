@@ -524,7 +524,7 @@ class level4_game:
     def __init__(self,tmx_map,level_frames):
         self.display_surface = pygame.display.get_surface()
     #    print("hi")
-     
+        
         self.all_sprites = Allsprites()
         self.collision_layers = ['Tile Layer 2','Tile Layer 3']
         self.anti_collision_layers = ['Tile Layer 1']
@@ -657,9 +657,10 @@ class level4_game:
         self.curr_posy= self.player.rect.y 
      #   print(self.curr_posx,self.curr_posy)
         
-            
+        pygame.mixer.music.load('useful_images/l_theme_death_note.mp3')
+        pygame.mixer.music.play(-1)
         self.all_sprites.update(dt)
-        self.display_surface.fill((0,100,40))
+        self.display_surface.fill((57,187,114))
         self.all_sprites.draw(self.player.rect.center)
         if (self.curr_posx<=1290 and self.curr_posx>=1180)and(self.curr_posy<=300 and self.curr_posy>=200):
             return 1 

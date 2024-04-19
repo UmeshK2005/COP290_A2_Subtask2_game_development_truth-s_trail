@@ -966,9 +966,10 @@ class level7_game:
         font_path = "graphics/docktrin.ttf"  # Path to the font file
         font_size = 36
         custom_font = pygame.font.Font(font_path, font_size)
-        self.text_surface1 = custom_font.render("The laptop is locked ,press 'F' to enter 6-digit passcode", True, (0, 0, 0))
-        self.text_surface2 = custom_font.render("Press 'F' to exit the view", True, (0, 0, 0))
-        self.text_surface3 = custom_font.render("Laptop Unlocked!!!, Appears like a chess-puzzle. Press 'F' to view the puzzle", True, (0, 0, 0))
+        self.text_surface1 = custom_font.render("The laptop is locked ,press 'f' to enter 6-digit passcode", True, (0, 0, 0))
+        self.text_surface2 = custom_font.render("Press 'f' to exit the view", True, (0, 0, 0))
+        self.text_surface3 = custom_font.render("Laptop Unlocked!!!, Appears like a chess-puzzle. Press 'f' to view the puzzle", True, (0, 0, 0))
+        self.text_surface4 = custom_font.render("Press 'K' to return to the reception ", True, (0, 0, 0))
         self.text_surface_tries1 = custom_font.render("You have only 2-tries left!", True, (0, 0, 0))
         self.text_surface_tries2 = custom_font.render("You have only 1-try left!", True, (0, 0, 0))
         self.text_surface_tries3 = custom_font.render("The passcode is wrong!", True, (0, 0, 0))
@@ -1102,12 +1103,22 @@ class level7_game:
                     self.start_time_pass = pygame.time.get_ticks()
                     self.image_show =False
             if self.image_show:
-                self.display_surface.blit(self.chess_image, (settings.WINDOW_WIDTH//4-200, settings.WINDOW_HEIGHT//4-200))
+                self.display_surface.blit(self.chess_image, (settings.WINDOW_WIDTH//4-100, settings.WINDOW_HEIGHT//4-100))
                 self.display_surface.blit(self.text_surface2, ((settings.WINDOW_WIDTH - self.text_surface2.get_width()) // 2, 
                                                           self.text_surface2.get_height()-50))
+        if self.image_show==False:
+            self.display_surface.blit(self.text_surface4, ((settings.WINDOW_WIDTH - self.text_surface4.get_width()) // 2, 
+                                                          self.text_surface4.get_height()-50))
+            keys = pygame.key.get_pressed()
+            
+            if keys[pygame.K_k]:
+                return 7 
+                
+                    
+            
                 
                 
-                '''
+        '''
                 self.display_surface.blit(self.text_surface3, ((settings.WINDOW_WIDTH - self.text_surface3.get_width()) // 2, 
                                                                 settings.WINDOW_HEIGHT - self.text_surface3.get_height()))
                 keys = pygame.key.get_pressed()

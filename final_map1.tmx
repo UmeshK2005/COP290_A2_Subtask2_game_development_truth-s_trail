@@ -104,17 +104,17 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="4" name="Object Layer 1" offsetx="2" offsety="0">
+ <objectgroup id="4" name="Object Layer 1" visible="0" offsetx="2" offsety="0">
   <object id="1" name="mansion" gid="115" x="589" y="241" width="500" height="497"/>
   <object id="5" name="front_gate" gid="114" x="591" y="955" width="292" height="309"/>
  </objectgroup>
- <objectgroup id="5" name="Object Layer 2">
+ <objectgroup id="5" name="Object Layer 2" visible="0">
   <object id="2" name="Guard 1" gid="116" x="595" y="287" width="86" height="164"/>
-  <object id="3" name="Guard 2" gid="117" x="391.75" y="286.25" width="77" height="147"/>
+  <object id="3" name="Guard 2" gid="117" x="384.954" y="293.046" width="49.8146" height="104.712"/>
   <object id="6" name="Guard 4" gid="113" x="454.25" y="937.75" width="75" height="128"/>
   <object id="7" name="Guard 3" gid="116" x="641.5" y="952.5" width="76" height="134"/>
  </objectgroup>
- <objectgroup id="6" name="Object Layer 3">
+ <objectgroup id="6" name="Object Layer 3" visible="0">
   <object id="9" name="player" gid="160" x="499.25" y="528.083" width="102.333" height="114.333"/>
  </objectgroup>
 </map>

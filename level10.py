@@ -1,14 +1,14 @@
 import pygame
 from settings import *
 
-def level0_game(screen, screen_width, screen_height):
+def level10_game(screen, screen_width, screen_height):
     # Load the background image
-    background_path = "useful_images/background_image.png"  
+    background_path = "useful_images/final_img.png"  
     background_image = pygame.image.load(background_path).convert()
     background_image = pygame.transform.scale(background_image, (screen_width, screen_height))
     
     # Load and play the background music
-    pygame.mixer.music.load('useful_images/l_theme_death_note.mp3')
+    pygame.mixer.music.load('useful_images/ending_note.mp3')
     pygame.mixer.music.play(-1)  # Loop the music indefinitely until stopped
     
     click_sound = pygame.mixer.Sound('useful_images/Click_sound.mp3')
@@ -59,11 +59,16 @@ def level0_game(screen, screen_width, screen_height):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:  # Check for mouse clicks
-                mouse_pos = pygame.mouse.get_pos()  # Get the current mouse position
-                if play_button_clicked(mouse_pos):
-                    click_sound.play()  
-                    return True
+            # elif event.type == pygame.MOUSEBUTTONDOWN:  # Check for mouse clicks
+            #     mouse_pos = pygame.mouse.get_pos()  # Get the current mouse position
+            #     if play_button_clicked(mouse_pos):
+                          
+
+            #         click_sound.play()  
+            #         return True
+            elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:  # Press SPACE to continue
+                        return True
         
         # Draw the background image
         screen.blit(background_image, (0, 0))
@@ -79,10 +84,10 @@ def level0_game(screen, screen_width, screen_height):
             screen.blit(overlay, (0, 0))  # Draw the overlay
 
         # Draw the play button
-        if is_over_play_button(mouse_pos):
-            screen.blit(play_button_enlarged_image, (play_button_x, play_button_y))  # Draw the enlarged play button
-        else:
-            screen.blit(play_button_image, (play_button_x, play_button_y))  # Draw the normal size play button
+        # if is_over_play_button(mouse_pos):
+        #     screen.blit(play_button_enlarged_image, (play_button_x, play_button_y))  # Draw the enlarged play button
+        # else:
+        #     screen.blit(play_button_image, (play_button_x, play_button_y))  # Draw the normal size play button
 
         # Draw the custom cursor at the mouse position
         screen.blit(custom_cursor_image, (mouse_pos[0] - custom_cursor_size[0] // 2, mouse_pos[1] - custom_cursor_size[1] // 2))
